@@ -1,2 +1,4 @@
 # Vagrant files
 .vagrant
+vars
+*.log
