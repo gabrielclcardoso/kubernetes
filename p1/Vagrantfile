@@ -1,7 +1,9 @@
-# Service configuration reference
 SERVICES = {
   'gcorreiaS' => {
     ip: '192.168.56.110'
+  },
+  'gcorreiaWS' => {
+    ip: '192.168.56.111'
   }
 }
 
@@ -10,21 +12,47 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/bionic64"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "1024"
+    vb.memory = "2048"
     vb.cpus = "2"
   end
   
-  # Common provisioning script for all VMs
-  # config.vm.provision "shell", name: "install-systemd", inline: <<-SHELL
-  #   apt install systemd -y
-  # SHELL
-
   # gcorreia Server 
   config.vm.define "gcorreiaS" do |gs|
+    # Network options
     gs.vm.hostname = "gcorreiaS"
     gs.vm.network "private_network", ip: SERVICES['gcorreiaS'][:ip]
 
-    gs.vm.provision "shell", name: "install-k3s", inline: <<-SHELL
+    # Shell setup
+    gs.vm.provision "shell", name: "install-k3s-Server", inline: <<-SHELL
+      echo "### Installing K3s server ###"
+      export INSTALL_K3S_EXEC="--write-kubeconfig-mode=644 --node-ip=192.168.56.110"
+      curl -sfL https://get.k3s.io | sh -
+
+      echo "### Saving K3s node token for worker ###"
+      sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant/vars/node-token
+    SHELL
+  end
+
+  # gcorreia Worker Server 
+  config.vm.define "gcorreiaWS" do |gws|
+    # Network options
+    gws.vm.hostname = "gcorreiaWS"
+    gws.vm.network "private_network", ip: SERVICES['gcorreiaWS'][:ip]
+
+    # Shell setup
+    gws.vm.provision "shell", name: "install-k3s-Worker", inline: <<-SHELL
+      echo "### Installing k3s worker ###"
+
+      # Wait for the node-token to be available from the server
+      while [ ! -f /vagrant/vars/node-token ]; do
+        echo "Waiting for node-token..."
+        sleep 5
+      done
+
+      echo "### Joining the cluster ###"
+      export INSTALL_K3S_EXEC="--node-ip=192.168.56.111"
+      export K3S_URL="https://192.168.56.110:6443"
+      export K3S_TOKEN=$(cat /vagrant/vars/node-token)
       curl -sfL https://get.k3s.io | sh -
     SHELL
   end
