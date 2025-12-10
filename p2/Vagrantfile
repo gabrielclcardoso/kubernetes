@@ -9,7 +9,7 @@ SERVICES = {
 Vagrant.configure("2") do |config|
   # Common configuration
   config.vm.box = "bento/debian-13.1"
-  config.vm.synced_folder "vars/", "/srv/vars", create: true
+  config.vm.synced_folder "confs/", "/confs", create: true
   
   # gcorreia Server 
   config.vm.define "gcorreiaS" do |gs|
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
       curl -sfL https://get.k3s.io | sh -
 
       echo "### Bringing up pods ###"
-      kubectl apply -f /srv/vars/manifest.yaml
+      kubectl apply -f /confs/app-two
     SHELL
   end
 end
