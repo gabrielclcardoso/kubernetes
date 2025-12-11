@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-one-service
+spec:
+  type: ClusterIP
+  selector:
+    # App in the deployment which the service will serve
+    app: app-one
+  ports:
+    - name: http
+      port: 80 # service port
+      targetPort: 8080 # container port
