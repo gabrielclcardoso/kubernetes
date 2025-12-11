@@ -33,6 +33,7 @@ Vagrant.configure("2") do |config|
       echo "### Bringing up pods ###"
       kubectl apply -f /confs/ingress.yaml
       kubectl apply -f /confs/app-two
+      kubectl apply -f /confs/app-three
     SHELL
   end
 end

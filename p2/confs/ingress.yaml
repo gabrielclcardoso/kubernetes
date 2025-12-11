@@ -14,3 +14,12 @@ spec:
             name: app-two-service
             port:
               number: 80
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app-three-service
+            port:
+              number: 80
