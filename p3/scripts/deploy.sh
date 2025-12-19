@@ -1,5 +1,7 @@
 #!/bin/bash
 
+### Bring up cluster ###
+
 CLUSTER_NAME="p3-cluster"
 
 if k3d cluster list "$CLUSTER_NAME" > /dev/null 2>&1; then
@@ -21,3 +23,8 @@ else
     echo "...Cluster created and started."
 
 fi
+
+### Start argoCD ###
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+#kubectl port-forward svc/argocd-server -n argocd 8080:443
