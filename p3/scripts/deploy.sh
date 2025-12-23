@@ -31,3 +31,10 @@ kubectl apply -k ../confs/argocd/
 kubectl rollout status deployment/argocd-server -n argocd
 
 kubectl apply -f ../confs/argocd/ingress.yaml
+
+### argoCD Configuration###
+echo "argoCD deployed, starting configuration"
+
+DEFAULT_PASSWD=$(argocd admin initial-password -n argocd | head -1)
+argocd login localhost --username admin --password "$DEFAULT_PASSWD" --insecure --grpc-web
+argocd account update-password --account admin --current-password "$DEFAULT_PASSWD" --new-password "$NEW_PASSWD" --grpc-web
