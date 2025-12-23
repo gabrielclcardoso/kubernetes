@@ -4,3 +4,7 @@ metadata:
   name: p3-cluster 
 servers: 1 # Control panes
 agents: 2 # Workers
+ports:
+  - port: 443:443
+    nodeFilters:
+      - loadbalancer
