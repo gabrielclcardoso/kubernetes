@@ -27,7 +27,7 @@ fi
 ### Start argoCD ###
 kubectl create namespace argocd
 
-kubectl apply -k ../confs/
+kubectl apply -k ../confs/argocd/
 kubectl rollout status deployment/argocd-server -n argocd
 
-kubectl apply -f ../confs/argocd-ingress.yaml
+kubectl apply -f ../confs/argocd/ingress.yaml
